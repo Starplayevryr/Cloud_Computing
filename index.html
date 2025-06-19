@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em auto;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    input, textarea {
+      margin-bottom: 1em;
+      padding: 0.8em;
+      font-size: 1em;
+    }
+    button {
+      padding: 0.8em;
+      background-color: #28a745;
+      color: white;
+      font-size: 1em;
+      border: none;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit Your Feedback</h2>
+  <form id="feedbackForm">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="email" id="email" placeholder="Your Email" required />
+    <textarea id="message" placeholder="Your Feedback" rows="5" required></textarea>
+    <button type="submit">Submit</button>
+    <div class="message" id="responseMessage"></div>
+  </form>
+
+  <script>
+    const form = document.getElementById('feedbackForm');
+    const responseMessage = document.getElementById('responseMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      const response = await fetch('http://localhost:3000/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        responseMessage.textContent = result.message;
+        responseMessage.style.color = 'green';
+        form.reset();
+      } else {
+        responseMessage.textContent = result.error || 'Submission failed';
+        responseMessage.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
